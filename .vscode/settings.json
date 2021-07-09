@@ -1,0 +1,26 @@
+{
+    "C_Cpp.intelliSenseEngine": "Default",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/deps/Unity/src",
+        "${workspaceFolder}/deps/xxHash"
+    ],
+    "doxygen_runner.configuration_file_override": "${workspaceFolder}/Doxyfile",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "deps/**": true,
+        "build/*.o": true,
+        "build/*.out": true,
+        "build/deps/*.o": true,
+        "build/tests/*.o": true,
+        "build/tests/*.out": true
+    },
+    "files.associations": {
+        "*.tf": "terraform",
+        "math.h": "c"
+    }
+}
