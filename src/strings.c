@@ -16,6 +16,10 @@ string_t* string(char const* text, int64_t length) {
     return self;
 }
 
+string_t* string_copy(string_t* self) {
+    return string(string_data(self), string_length(self));
+}
+
 void string_free(string_t* self) {
     free(self->buf);
     free(self);

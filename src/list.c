@@ -71,20 +71,6 @@ list_t* list_extend(list_t* self, list_t* other) {
     return self;
 }
 
-list_t* list_insert(list_t* self, int64_t index, void* elem) {
-    if (self->size >= self->capacity) {
-        self = list_resize(self, self->capacity * 2);
-    }
-
-    for (int64_t n = 0; n < (self->size-index); ++n) {
-        self->buf[index+n+1] = self->buf[index+n];
-    }
-    self->buf[index] = elem;
-    ++self->size;
-
-    return self;
-}
-
 list_t* list_prepend(list_t* self, void* elem) {
     if ((self->size + 1) >= self->capacity) {
         self = list_resize(self, self->capacity * 2);
@@ -96,15 +82,6 @@ list_t* list_prepend(list_t* self, void* elem) {
 
     self->buf[0] = elem;
     ++self->size;
-
-    return self;
-}
-
-list_t* list_remove(list_t* self, void* elem) {
-    int64_t index = list_find(self, elem);
-    if (index > -1) {
-        list_pop(self, index);
-    }
 
     return self;
 }
@@ -154,6 +131,10 @@ bool list_equal(list_t* lhs, list_t* rhs) {
     return true;
 }
 
+int64_t list_capacity(list_t* self) {
+    return self->capacity;
+}
+
 int64_t list_find(list_t* self, void* elem) {
     for (int64_t n = 0; n < self->size; ++n) {
         if (self->buf[n] == elem) {
@@ -176,8 +157,22 @@ void* list_get(list_t* self, int64_t index) {
     return self->buf[index];
 }
 
+void* list_insert(list_t* self, int64_t index, void* elem) {
+    if (self->size >= self->capacity) {
+        self = list_resize(self, self->capacity * 2);
+    }
+
+    for (int64_t n = 0; n < (self->size-index); ++n) {
+        self->buf[index+n+1] = self->buf[index+n];
+    }
+    self->buf[index] = elem;
+    ++self->size;
+
+    return self;
+}
+
 void* list_pop(list_t* self, int64_t index) {
-    if (index >= self->size) {
+    if (index >= self->size || index < 0) {
         return NULL;
     }
 
@@ -189,6 +184,10 @@ void* list_pop(list_t* self, int64_t index) {
     --self->size;
 
     return elem;
+}
+
+void* list_remove(list_t* self, void* elem) {
+    return list_pop(self, list_find(self, elem));
 }
 
 void* list_set(list_t* self, int64_t index, void* elem) {

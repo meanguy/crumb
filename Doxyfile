@@ -1,5 +1,7 @@
 INPUT = src
 INPUT = include
 
+OUTPUT_DIRECTORY = docs
+
 FILE_PATTERNS = *.c
 FILE_PATTERNS = *.h

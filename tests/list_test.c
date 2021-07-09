@@ -277,9 +277,10 @@ void test_list_remove_should_remove_present_element(void) {
     string_t* str2 = string("world", 5);
 
     list = list_append(list_append(list, str1), str2);
-    list = list_remove(list, str1);
+    void* elem = list_remove(list, str1);
 
     TEST_ASSERT_EQUAL(1, list_size(list));
+    TEST_ASSERT_EQUAL_PTR(str1, elem);
     TEST_ASSERT_EQUAL_PTR(NULL, list_get(list, 1));
     TEST_ASSERT_EQUAL_PTR(str2, list_get(list, 0));
 
@@ -433,38 +434,61 @@ void test_list_slice_should_return_slice_of_elements(void) {
     list_free(slice);
 }
 
+void test_list_capacity_should_reflect_internal_capacity(void) {
+    list_t* list = list_new(8);
+
+    TEST_ASSERT_EQUAL(8, list_capacity(list));
+
+    list_free(list);
+}
+
+void test_list_resize_should_increase_list_capacity(void) {
+    list_t* list = list_new(8);
+    list = list_resize(list, 16);
+
+    TEST_ASSERT_EQUAL(16, list_capacity(list));
+
+    list_free(list);
+}
+
 int main(void) {
     UNITY_BEGIN();
 
+    RUN_TEST(test_list_copy_copy_should_equal_original);
+    RUN_TEST(test_list_copy_copy_should_not_modify_original);
+    
     RUN_TEST(test_list_append_should_add_elements);
     RUN_TEST(test_list_append_should_add_multiple_elements);
     RUN_TEST(test_list_clear_should_clear_list_buffer);
-    RUN_TEST(test_list_copy_copy_should_equal_original);
-    RUN_TEST(test_list_copy_copy_should_not_modify_original);
-    RUN_TEST(test_list_equal_different_elems_should_return_false);
-    RUN_TEST(test_list_equal_different_size_should_return_false);
-    RUN_TEST(test_list_equal_same_elems_should_return_true);
-    RUN_TEST(test_list_equal_same_identity_should_return_true);
     RUN_TEST(test_list_extend_should_append_elements);
     RUN_TEST(test_list_extend_should_append_multiple_elements);
-    RUN_TEST(test_list_find_should_return_index_of_found_element);
-    RUN_TEST(test_list_find_should_return_negative_int_if_element_missing);
-    RUN_TEST(test_list_get_should_return_element_at_index);
-    RUN_TEST(test_list_get_should_return_null_if_out_of_bounds);
     RUN_TEST(test_list_insert_should_add_element_at_position);
     RUN_TEST(test_list_insert_should_add_element_to_beginning);
     RUN_TEST(test_list_insert_should_add_element_to_end);
-    RUN_TEST(test_list_pop_should_return_element_at_index);
-    RUN_TEST(test_list_pop_should_return_null_if_out_of_bounds);
     RUN_TEST(test_list_prepend_should_add_element_to_beginning);
     RUN_TEST(test_list_prepend_should_add_multiple_elements_to_beginning);
     RUN_TEST(test_list_remove_should_do_nothing_if_element_missing);
     RUN_TEST(test_list_remove_should_remove_present_element);
-    RUN_TEST(test_list_size_should_reflect_elements);
+    RUN_TEST(test_list_resize_should_increase_list_capacity);
     RUN_TEST(test_list_slice_should_return_null_if_negative_range);
     RUN_TEST(test_list_slice_should_return_null_if_out_of_bounds);
     RUN_TEST(test_list_slice_should_return_null_if_start_after_end);
     RUN_TEST(test_list_slice_should_return_slice_of_elements);
+
+    RUN_TEST(test_list_equal_different_elems_should_return_false);
+    RUN_TEST(test_list_equal_different_size_should_return_false);
+    RUN_TEST(test_list_equal_same_elems_should_return_true);
+    RUN_TEST(test_list_equal_same_identity_should_return_true);
+
+    RUN_TEST(test_list_capacity_should_reflect_internal_capacity);
+    RUN_TEST(test_list_find_should_return_index_of_found_element);
+    RUN_TEST(test_list_find_should_return_negative_int_if_element_missing);
+    RUN_TEST(test_list_size_should_reflect_elements);
+
+    RUN_TEST(test_list_get_should_return_element_at_index);
+    RUN_TEST(test_list_get_should_return_null_if_out_of_bounds);
+    RUN_TEST(test_list_pop_should_return_element_at_index);
+    RUN_TEST(test_list_pop_should_return_null_if_out_of_bounds);
 
     return UNITY_END();
 }

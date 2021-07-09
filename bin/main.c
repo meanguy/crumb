@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
 
     fprintf(stdout, "%ld\n", list_find(l, list_get(l, 0)));
 
+    string_free((string_t*) list_get(l, 0));
     l = list_remove(l, list_get(l, 0));
     list_fprint(l, stdout);
 

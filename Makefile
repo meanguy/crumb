@@ -3,32 +3,60 @@ TARGET := main
 CFLAGS := -g -std=c17 -fsanitize=address
 IFLAGS := -Iinclude/ -Ideps/xxHash/
 
-_obj_files ?= list.o math.o strings.o
+_obj_files ?= list.o map.o math.o strings.o tuple.o
 obj_files ?= $(patsubst %,build/%, $(_obj_files))
 
-_src_files ?= list.c math.c strings.c
+_src_files ?= list.c map.c math.c strings.c tuple.c
 src_files ?= $(patsubst %,src/%, $(_src_files))
 
 _test_files ?= list_test.c strings_test.c
+test_exes ?= $(patsubst %.c,build/tests/%.out, $(_test_files))
 test_files ?= $(patsubst %,tests/%, $(_test_files))
+test_objs ?= $(patsubst %.c,build/tests/%.o, $(_test_files))
+
+deps_objs ?= build/deps/xxhash.o
+test_deps ?= build/deps/unity.o
 
 test_results ?= $(patsubst %.c,build/tests/results/%.txt, $(_test_files))
 
-.PHONY: default all clean
+.PHONY: default
+default: deps run
 
-default: deps build/$(TARGET).out
-
+.PHONY: all
 all: default
 
+.PHONY: clean
 clean:
-	-find build/ -type f \( -name '*.o' -or -name '*.out' -or -name '*.txt' \) -print -exec rm -f {} \;
+	-find build/ -type f \( -name '*.o' -or -name '*.out' -or -name '*.txt' \) -exec rm -f {} \;
+	rm -rf docs/*
 
+.PHONY: clean-all
 clean-all: clean clean-deps
 
+.PHONY: clean-deps
 clean-deps:
 	-rm -rf deps/*
 
-deps: deps/Unity deps/xxHash
+.PHONY: clean-docker
+clean-docker:
+	@docker stop crumb-docs-nginx && docker rm crumb-docs-nginx || true
+
+deps: $(deps_objs)
+
+.PHONY: docs
+docs:
+	doxygen
+
+.PHONY: run
+run: build/$(TARGET).out
+	./$<
+
+.PHONY: serve-docs
+serve-docs: clean-docker docs
+	docker run --name crumb-docs-nginx -v $(shell pwd)/docs/html:/usr/share/nginx/html:ro -p 8080:80 nginx || true
+
+.PHONY: test-deps
+test-deps: $(test_deps)
 
 deps/Unity:
 	git clone git@github.com:ThrowTheSwitch/Unity.git $@
@@ -45,23 +73,27 @@ build/$(TARGET).o:: bin/$(TARGET).c
 build/deps/%.o:: deps/Unity/src/%.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@ -Ideps/Unity/src
 
-build/tests/%.o:: tests/%.c deps
+build/deps/%.o:: deps/xxHash/%.c
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
+
+build/tests/%.o: tests/%.c deps
 	$(CC) $(CFLAGS) $(IFLAGS) -Ideps/Unity/src -c $< -o $@
 
-build/$(TARGET).out: $(obj_files) build/main.o
-	$(CC) $(CFLAGS) $(IFLAGS) $(obj_files) build/main.o -Wall -o $@
+build/$(TARGET).out: build/$(TARGET).o $(obj_files) $(deps_objs)
+	$(CC) $(CFLAGS) $(IFLAGS) $^ -Wall -o $@
 
-build/tests/%_test.out: build/deps/unity.o build/tests/%_test.o $(obj_files)
-	$(CC) $(CFLAGS) -o $@ $^
+build/tests/%.out: build/tests/%.o $(obj_files) deps test-deps
+	$(CC) $(CFLAGS) -o $@ $< $(obj_files) $(deps_objs) $(test_deps)
 
 build/tests/results/%.txt: build/tests/%.out
-	-./$< > $@ 2>&1 || true
+	-./$< > $@ || true
 
-test: deps $(test_results) build/ build/deps/ build/tests/results/ 
-	@cat build/tests/results/*.txt | ./tests/bin/test_report.py
+.PHONY: test
+test: deps $(test_results) build/ build/deps/ build/tests/results/
+	find build/tests/results -type f -name '*.txt' -exec bash -c 'cat {} | ./tests/bin/test_report.py' \;
 
-.PRECIOUS: build/%.d
 .PRECIOUS: build/%.o
+.PRECIOUS: build/%.out
 .PRECIOUS: build/tests/%.o
 .PRECIOUS: build/tests/%.out
 .PRECIOUS: build/tests/results/%.txt

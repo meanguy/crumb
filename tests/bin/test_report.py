@@ -24,7 +24,7 @@ if __name__ == "__main__":
     for current_line in sys.stdin:
         split = current_line.split(":")
         if len(split) != 4:
-            continue
+            break
 
         file = split[0]
         lineno = int(split[1])
@@ -39,6 +39,7 @@ if __name__ == "__main__":
 
     if len(lines) == 0:
         print("No tests found.")
+        sys.exit(0)
 
     num_results = {
         TestCaseResult.pass_: sum(1 for line in lines if line.result == TestCaseResult.pass_),
@@ -50,8 +51,6 @@ if __name__ == "__main__":
         TestCaseResult.fail: [line for line in lines if line.result == TestCaseResult.fail],
         TestCaseResult.skip: [line for line in lines if line.result == TestCaseResult.skip],
     }
-
-    print(f"{lines[0]} results:")
     
     print(f"\t{num_results[TestCaseResult.pass_]}/{len(lines)} passing tests")
     for test_result in test_results[TestCaseResult.pass_]:
@@ -69,3 +68,4 @@ if __name__ == "__main__":
     print("")
 
     print(f"\t{num_results[TestCaseResult.pass_]} pass, {num_results[TestCaseResult.fail]} fail, {num_results[TestCaseResult.skip]} skip")
+    sys.exit(0)
