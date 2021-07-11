@@ -5,7 +5,6 @@
 
 /**
  * @brief string_t is a string data structure.
- * 
  */
 typedef struct string_t {
     /*! the underlying memory buffer. */
@@ -92,3 +91,18 @@ char* string_data(string_t* self);
  * @return int64_t the length of the data in @p self.
  */
 int64_t string_length(string_t* self);
+
+/**
+ * @brief string_substr returns a substring of @p self.
+ * 
+ * string_substr returns a new @ref string_t containing a subset of @p self.
+ * 
+ * @relates string_t
+ * 
+ * @param self the @ref string_t instance.
+ * @param start the starting index of the substring.
+ * @param end the ending index of the substring.
+ *  
+ * @return string_t* a subtring of @p self or NULL if out of bounds.
+ */
+string_t* string_substr(string_t* self, int64_t start, int64_t end);

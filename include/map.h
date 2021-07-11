@@ -79,6 +79,23 @@ map_t* map_set(map_t* self, string_t* key, void* value);
 
 
 /**
+ * @brief map_equal returns true if two @ref map_t instances are equal.
+ * 
+ * map_equal returns true if two @ref map_t instances are equal, where
+ * equality is defined by identity and elements. Element comparison may take
+ * O(n) time if the two @ref map_t instances are equal in elements but not
+ * identity.
+ * 
+ * @param lhs the @ref map_t on the left side of the comparison.
+ * @param rhs the @ref map_t on the right side of the comparison.
+ * 
+ * @return bool true if the identity or elements of @p lhs and @p rhs are
+ * equal, else false.
+ */
+bool map_equal(map_t* lhs, map_t* rhs);
+
+
+/**
  * @brief map_delete removes the key-value pair matching @p key.
  * 
  * map_delete removes the key-value pair matching @p key, returning

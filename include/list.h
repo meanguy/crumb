@@ -165,7 +165,8 @@ list_t* list_slice(list_t* self, int64_t start, int64_t end);
  * @param lhs the @ref list_t on the left side of the comparison.
  * @param rhs the @ref list_t on the right side of the comparison.
  * 
- * @return bool
+ * @return bool true if the identity or elements of @p lhs and @p rhs are 
+ * equal, else false.
  */
 bool list_equal(list_t* lhs, list_t* rhs);
 

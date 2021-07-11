@@ -41,11 +41,12 @@ map_t* map_new(int64_t bucket_count, int64_t bucket_capacity) {
 
 map_t* map_copy(map_t* self, int64_t bucket_count, int64_t bucket_capacity) {
     map_t* other = map_new(bucket_count, bucket_capacity);
-    other->buckets = list_new(bucket_count);
 
     for (int64_t b = 0; b < list_size(self->buckets); ++b) {
-        for (int64_t p = 0; p < list_size(list_get(self->buckets, b)); ++p) {
-            tuple_t* pair = (tuple_t*) list_get(list_get(self->buckets, b), p);
+        list_t* bucket = list_get(self->buckets, b);
+
+        for (int64_t p = 0; p < list_size(bucket); ++p) {
+            tuple_t* pair = (tuple_t*) list_get(bucket, p);
 
             other = map_set(other, (string_t*) pair->first, pair->second);
         }
@@ -86,24 +87,60 @@ map_t* map_clear(map_t* self) {
 
 map_t* map_set(map_t* self, string_t* key, void* value) {
     list_t* bucket = list_get(self->buckets, map_hash_key(self, key));
-    
-    for (int64_t n = 0; n < list_size(bucket); ++n) {
-        tuple_t* pair = list_get(bucket, n);
+
+    for (int64_t index = 0; index < list_size(bucket); ++index) {
+        tuple_t* pair = list_get(bucket, index);
 
         if (string_equal(key, (string_t*) pair->first)) {
+            // cleanup the old key-value pair
+            string_free((string_t*) pair->first);
             tuple_free(pair);
+
+            list_set(bucket, index, tuple_new(string_copy(key), value));
+
+            return self;
         }
     }
 
-    int64_t found = list_find(bucket, value);
-    if (found != -1) {
-        tuple_t* pair = list_get(bucket, found);
-        tuple_free(pair);
-    }
-
-    bucket = list_set(bucket, found, tuple_new(string_copy(key), value));
+    list_append(bucket, tuple_new(string_copy(key), value));
 
     return self;
+}
+
+bool map_equal(map_t* lhs, map_t* rhs) {
+    if (lhs == rhs) {
+        return true;
+    }
+
+    for (int n = 0; n < list_size(lhs->buckets); ++n) {
+        list_t* bucket = list_get(lhs->buckets, n);
+
+        for (int p = 0; p < list_size(bucket); ++p) {
+            tuple_t* pair = list_get(bucket, p);
+            string_t* key = pair->first;
+
+            void* value = map_get(rhs, key);
+            if (value != pair->second) {
+                return false;
+            }
+        }
+    }
+
+    for (int n = 0; n < list_size(rhs->buckets); ++n) {
+        list_t* bucket = list_get(rhs->buckets, n);
+
+        for (int p = 0; p < list_size(bucket); ++p) {
+            tuple_t* pair = list_get(bucket, p);
+            string_t* key = pair->first;
+
+            void* value = map_get(lhs, key);
+            if (value != pair->second) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void* map_delete(map_t* self, string_t* key) {
@@ -113,9 +150,13 @@ void* map_delete(map_t* self, string_t* key) {
         tuple_t* pair = list_get(bucket, n);
 
         if (string_equal(key, (string_t*) pair->first)) {
-            bucket = list_remove(bucket, pair->second);
+            void* elem = pair->second;
+            bucket = list_remove(bucket, pair);
 
-            return pair->second;
+            string_free((string_t*) pair->first);
+            tuple_free(pair);
+
+            return elem;
         }
     }
 

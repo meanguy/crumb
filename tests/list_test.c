@@ -12,7 +12,7 @@ void list_foreach_string_free_callback(void* s) {
     string_free((string_t*)s);
 }
 
-void test_list_equal_same_elems_should_return_true(void) {
+void test_list_equal_should_return_true_if_same_elements(void) {
     list_t* lhs = list_new(8);
     list_t* rhs = list_new(8);
     string_t* str1 = string("hello", 5);
@@ -28,7 +28,7 @@ void test_list_equal_same_elems_should_return_true(void) {
     list_free(rhs);
 }
 
-void test_list_equal_same_identity_should_return_true(void) {
+void test_list_equal_should_return_true_if_same_identity(void) {
     list_t* list = list_new(8);
 
     TEST_ASSERT_TRUE(list_equal(list, list));
@@ -36,7 +36,7 @@ void test_list_equal_same_identity_should_return_true(void) {
     list_free(list);
 }
 
-void test_list_equal_different_size_should_return_false(void) {
+void test_list_equal_should_return_false_if_different_size(void) {
     list_t* lhs = list_new(8);
     list_t* rhs = list_new(8);
     string_t* str1 = string("hello", 5);
@@ -51,7 +51,7 @@ void test_list_equal_different_size_should_return_false(void) {
     list_free(rhs);
 }
 
-void test_list_equal_different_elems_should_return_false(void) {
+void test_list_equal_should_return_false_if_different_elements(void) {
     list_t* lhs = list_new(8);
     list_t* rhs = list_new(8);
     string_t* str1 = string("hello", 5);
@@ -475,10 +475,10 @@ int main(void) {
     RUN_TEST(test_list_slice_should_return_null_if_start_after_end);
     RUN_TEST(test_list_slice_should_return_slice_of_elements);
 
-    RUN_TEST(test_list_equal_different_elems_should_return_false);
-    RUN_TEST(test_list_equal_different_size_should_return_false);
-    RUN_TEST(test_list_equal_same_elems_should_return_true);
-    RUN_TEST(test_list_equal_same_identity_should_return_true);
+    RUN_TEST(test_list_equal_should_return_false_if_different_elements);
+    RUN_TEST(test_list_equal_should_return_false_if_different_size);
+    RUN_TEST(test_list_equal_should_return_true_if_same_elements);
+    RUN_TEST(test_list_equal_should_return_true_if_same_identity);
 
     RUN_TEST(test_list_capacity_should_reflect_internal_capacity);
     RUN_TEST(test_list_find_should_return_index_of_found_element);
