@@ -17,3 +17,11 @@ tuple_t* tuple_copy(tuple_t* self) {
 void tuple_free(tuple_t* self) {
     free(self);
 }
+
+bool tuple_equal(tuple_t* lhs, tuple_t* rhs) {
+    if (lhs == rhs) {
+        return true;
+    }
+
+    return lhs->first == rhs->first && lhs->second == rhs->second;
+}

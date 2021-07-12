@@ -3,7 +3,7 @@
 import sys
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import List
+from typing import List, Optional
 
 class TestCaseResult(Enum):
     pass_ = auto()
@@ -17,13 +17,14 @@ class TestResultLine:
     lineno: int
     name: str
     result: TestCaseResult
+    errmsg: Optional[str]
 
 
 if __name__ == "__main__":
     lines: List[TestResultLine] = []
     for current_line in sys.stdin:
-        split = current_line.split(":")
-        if len(split) != 4:
+        split = current_line.replace("\n", "").split(":")
+        if len(split) < 4:
             break
 
         file = split[0]
@@ -33,9 +34,13 @@ if __name__ == "__main__":
             "PASS": TestCaseResult.pass_,
             "FAIL": TestCaseResult.fail,
             "IGNORE": TestCaseResult.skip,
-        }[split[3][:-1]]
+        }[split[3]]
 
-        lines.append(TestResultLine(file, lineno, name, result))
+        errmsg = None
+        if result == TestCaseResult.fail and len(split) == 5:
+            errmsg = split[4]
+
+        lines.append(TestResultLine(file, lineno, name, result, errmsg=errmsg))
 
     if len(lines) == 0:
         print("No tests found.")
@@ -68,4 +73,8 @@ if __name__ == "__main__":
     print("")
 
     print(f"\t{num_results[TestCaseResult.pass_]} pass, {num_results[TestCaseResult.fail]} fail, {num_results[TestCaseResult.skip]} skip")
+
+    if num_results[TestCaseResult.fail] > 0:
+        sys.exit(1)
+
     sys.exit(0)

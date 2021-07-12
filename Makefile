@@ -9,7 +9,7 @@ obj_files ?= $(patsubst %,build/%, $(_obj_files))
 _src_files ?= list.c map.c math.c strings.c tuple.c
 src_files ?= $(patsubst %,src/%, $(_src_files))
 
-_test_files ?= list_test.c map_test.c strings_test.c
+_test_files ?= list_test.c map_test.c strings_test.c tuple_test.c
 test_exes ?= $(patsubst %.c,build/tests/%.out, $(_test_files))
 test_files ?= $(patsubst %,tests/%, $(_test_files))
 test_objs ?= $(patsubst %.c,build/tests/%.o, $(_test_files))
@@ -85,12 +85,17 @@ build/$(TARGET).out: build/$(TARGET).o $(obj_files) $(deps_objs)
 build/tests/%.out: build/tests/%.o $(obj_files) deps test-deps
 	$(CC) $(CFLAGS) -o $@ $< $(obj_files) $(deps_objs) $(test_deps)
 
+.PHONY: build/tests/results/%.txt
 build/tests/results/%.txt: build/tests/%.out
 	@./$< > $@ || true
 
 .PHONY: test
 test: deps $(test_results) build/ build/deps/ build/tests/results/
-	@find build/tests/results -type f -name '*.txt' -print -exec bash -c 'cat {} | ./tests/bin/test_report.py' \;
+	@find build/tests/results -type f -name '*.txt' -print | xargs -I {} bash -c 'cat {} | ./tests/bin/test_report.py'
+
+.PHONY: %_test
+%_test: build/tests/%_test.out
+	@./$< | ./tests/bin/test_report.py
 
 .PRECIOUS: build/%.o
 .PRECIOUS: build/%.out
