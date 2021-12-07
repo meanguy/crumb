@@ -77,11 +77,11 @@ build/$(TARGET).o:: bin/$(TARGET).c
 build/crumb.o: $(obj_files) $(deps_objs)
 	ld -relocatable $^ -o $@
 
-build/deps/%.o:: deps/Unity/src/%.c
-	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@ -Ideps/Unity/src
+build/deps/unity.o:: deps/Unity
+	$(CC) $(CFLAGS) $(IFLAGS) -c deps/Unity/src/*.c -o $@ -Ideps/Unity/src
 
-build/deps/xxhash.o:: deps/xxHash/xxhash.c
-	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
+build/deps/xxhash.o: deps/xxHash
+	$(CC) $(CFLAGS) $(IFLAGS) -c deps/xxHash/xxhash.c -o $@
 
 build/tests/%.o: tests/%.c deps
 	$(CC) $(CFLAGS) $(IFLAGS) -Ideps/Unity/src -c $< -o $@
