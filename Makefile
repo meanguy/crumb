@@ -44,7 +44,7 @@ clean-docker:
 deps: deps/Unity deps/xxHash
 
 .PHONY: dist
-dist: build/crumb.o
+dist: deps build/crumb.o
 
 .PHONY: docs
 docs:
@@ -76,10 +76,10 @@ build/$(TARGET).o:: bin/$(TARGET).c
 build/crumb.o: $(obj_files) $(deps_objs)
 	ld -relocatable $^ -o $@
 
-build/deps/%.o:: deps/Unity/src/%.c
+build/deps/%.o:: deps/Unity deps/Unity/src/%.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@ -Ideps/Unity/src
 
-build/deps/%.o:: deps/xxHash/%.c
+build/deps/xxhash.o:: deps/xxHash/xxhash.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 build/tests/%.o: tests/%.c deps
