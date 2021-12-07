@@ -1,7 +1,12 @@
 CC := gcc
+DEV ?=
 TARGET := main
-CFLAGS := -g -std=c17 -fsanitize=address
+CFLAGS := -g -std=c17
 IFLAGS := -Iinclude/ -Ideps/xxHash/
+
+ifdef DEV
+	CFLAGS := $(CFLAGS) -fsanitize=address
+endif
 
 _obj_files ?= list.o map.o math.o cstrings.o tuple.o
 obj_files ?= $(patsubst %,build/%, $(_obj_files))
