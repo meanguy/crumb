@@ -41,7 +41,10 @@ clean-deps:
 clean-docker:
 	@docker stop crumb-docs-nginx && docker rm crumb-docs-nginx || true
 
-deps: $(deps_objs)
+deps: deps/Unity deps/xxHash
+
+.PHONY: dist
+dist: build/crumb.o
 
 .PHONY: docs
 docs:
@@ -69,6 +72,9 @@ build/%.o:: src/%.c
 
 build/$(TARGET).o:: bin/$(TARGET).c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
+
+build/crumb.o: $(obj_files) $(deps_objs)
+	ld -relocatable $^ -o $@
 
 build/deps/%.o:: deps/Unity/src/%.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@ -Ideps/Unity/src

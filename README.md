@@ -24,6 +24,11 @@ make build
 ```
 
 ```bash
+# build static library object
+make dist
+```
+
+```bash
 # run unit tests
 make test
 ```
