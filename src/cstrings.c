@@ -1,4 +1,4 @@
-#include "strings.h"
+#include "cstrings.h"
 
 #include <stdbool.h>
 #include <stdlib.h>

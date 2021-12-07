@@ -1,6 +1,6 @@
 #include "unity.h"
 
-#include "strings.h"
+#include "cstrings.h"
 #include "tuple.h"
 
 void setUp(void) {}

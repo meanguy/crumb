@@ -1,7 +1,7 @@
 #include "unity.h"
 
 #include "map.h"
-#include "strings.h"
+#include "cstrings.h"
 #include "tuple.h"
 
 void setUp(void) {}

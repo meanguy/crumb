@@ -3,13 +3,13 @@ TARGET := main
 CFLAGS := -g -std=c17 -fsanitize=address
 IFLAGS := -Iinclude/ -Ideps/xxHash/
 
-_obj_files ?= list.o map.o math.o strings.o tuple.o
+_obj_files ?= list.o map.o math.o cstrings.o tuple.o
 obj_files ?= $(patsubst %,build/%, $(_obj_files))
 
-_src_files ?= list.c map.c math.c strings.c tuple.c
+_src_files ?= list.c map.c math.c cstrings.c tuple.c
 src_files ?= $(patsubst %,src/%, $(_src_files))
 
-_test_files ?= list_test.c map_test.c strings_test.c tuple_test.c
+_test_files ?= list_test.c map_test.c cstrings_test.c tuple_test.c
 test_exes ?= $(patsubst %.c,build/tests/%.out, $(_test_files))
 test_files ?= $(patsubst %,tests/%, $(_test_files))
 test_objs ?= $(patsubst %.c,build/tests/%.o, $(_test_files))
@@ -41,7 +41,8 @@ clean-deps:
 clean-docker:
 	@docker stop crumb-docs-nginx && docker rm crumb-docs-nginx || true
 
-deps: deps/Unity deps/xxHash
+.PHONY: deps
+deps: $(deps_objs)
 
 .PHONY: dist
 dist: deps build/crumb.o
@@ -76,7 +77,7 @@ build/$(TARGET).o:: bin/$(TARGET).c
 build/crumb.o: $(obj_files) $(deps_objs)
 	ld -relocatable $^ -o $@
 
-build/deps/%.o:: deps/Unity deps/Unity/src/%.c
+build/deps/%.o:: deps/Unity/src/%.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@ -Ideps/Unity/src
 
 build/deps/xxhash.o:: deps/xxHash/xxhash.c

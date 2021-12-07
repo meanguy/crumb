@@ -4,7 +4,7 @@
 
 #include "xxhash.h"
 
-#include "strings.h"
+#include "cstrings.h"
 #include "tuple.h"
 
 #define CRUMB_MAP_SEED 4374805547167856529

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "list.h"
-#include "strings.h"
+#include "cstrings.h"
 
 /**
  * @brief map_t is a hash map for looking up values with a @ref string_t key.
