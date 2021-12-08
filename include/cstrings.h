@@ -42,7 +42,7 @@ string_t* string(char const* str, int64_t length);
  * 
  * @return string_t* a copy of @p self.
  */
-string_t* string_copy(string_t* self);
+string_t* string_copy(string_t const* self);
 
 /**
  * @brief list_free frees the memory of @p self.

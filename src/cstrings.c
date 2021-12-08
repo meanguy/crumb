@@ -16,7 +16,7 @@ string_t* string(char const* text, int64_t length) {
     return self;
 }
 
-string_t* string_copy(string_t* self) {
+string_t* string_copy(string_t const* self) {
     return string(string_data(self), string_length(self));
 }
 
@@ -42,11 +42,11 @@ int64_t string_length(string_t const* self) {
 }
 
 string_t* string_substr(string_t const* self, int64_t start, int64_t end) {
-    if (start < 0 || start >= self->length) {
+    if (start < 0 || start >= string_length(self)) {
         return NULL;
     }
 
-    if (end < start || end >= self->length) {
+    if (end < start || end >= string_length(self)) {
         return NULL;
     }
 
