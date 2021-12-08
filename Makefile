@@ -68,10 +68,10 @@ serve-docs: clean-docker docs
 test-deps: $(test_deps)
 
 deps/Unity:
-	git clone git@github.com:ThrowTheSwitch/Unity.git $@
+	[ -d $@ ] || git clone git@github.com:ThrowTheSwitch/Unity.git $@
 
 deps/xxHash:
-	git clone git@github.com:Cyan4973/xxHash.git $@
+	[ -d $@ ] || git clone git@github.com:Cyan4973/xxHash.git $@
 
 build/%.o:: src/%.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
@@ -95,7 +95,7 @@ build/$(TARGET).out: build/$(TARGET).o $(obj_files) $(deps_objs)
 	$(CC) $(CFLAGS) $(IFLAGS) $^ -Wall -o $@
 
 build/tests/%.out: build/tests/%.o $(obj_files) deps test-deps
-	$(CC) $(CFLAGS) -o $@ $< $(obj_files) $(deps_objs) $(test_deps)
+	$(CC) $(CFLAGS) $< $(obj_files) $(deps_objs) $(test_deps) -o $@
 
 .PHONY: build/tests/results/%.txt
 build/tests/results/%.txt: build/tests/%.out

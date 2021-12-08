@@ -68,7 +68,7 @@ void string_free(string_t* self);
  * @return bool true if the identity or data of @p lhs and @p rhs are 
  * equal, else false.
  */
-bool string_equal(string_t* lhs, string_t* rhs);
+bool string_equal(string_t const* lhs, string_t const* rhs);
 
 /**
  * @brief string_data returns the underlying memory buffer of @p self.
@@ -79,7 +79,7 @@ bool string_equal(string_t* lhs, string_t* rhs);
  * 
  * @return char* the underlying memory buffer owned by @p self.
  */
-char* string_data(string_t* self);
+char* string_data(string_t const* self);
 
 /**
  * @brief string_length returns the length of the string data.
@@ -90,7 +90,7 @@ char* string_data(string_t* self);
  * 
  * @return int64_t the length of the data in @p self.
  */
-int64_t string_length(string_t* self);
+int64_t string_length(string_t const* self);
 
 /**
  * @brief string_substr returns a substring of @p self.
@@ -105,4 +105,4 @@ int64_t string_length(string_t* self);
  *  
  * @return string_t* a subtring of @p self or NULL if out of bounds.
  */
-string_t* string_substr(string_t* self, int64_t start, int64_t end);
+string_t* string_substr(string_t const* self, int64_t start, int64_t end);

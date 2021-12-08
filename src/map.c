@@ -11,9 +11,8 @@
 
 void list_foreach_tuple_free_fn(void* elem) {
     tuple_t* self = (tuple_t*) elem;
-    string_t* key = (string_t*) self->first;
 
-    string_free(key);
+    string_free(self->first);
     tuple_free(self);
 }
 

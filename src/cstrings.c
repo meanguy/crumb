@@ -25,19 +25,23 @@ void string_free(string_t* self) {
     free(self);
 }
 
-bool string_equal(string_t* lhs, string_t* rhs) {
-    return strncmp(string_data(lhs), string_data(rhs), crumb_min(string_length(lhs), string_length(rhs))) == 0;
+bool string_equal(string_t const* lhs, string_t const* rhs) {
+    if (string_length(lhs) != string_length(rhs)) {
+        return false;
+    }
+
+    return strncmp(string_data(lhs), string_data(rhs), string_length(lhs)) == 0;
 }
 
-char* string_data(string_t* self) {
+char* string_data(string_t const* self) {
     return self->buf;
 }
 
-int64_t string_length(string_t* self) {
+int64_t string_length(string_t const* self) {
     return self->length;
 }
 
-string_t* string_substr(string_t* self, int64_t start, int64_t end) {
+string_t* string_substr(string_t const* self, int64_t start, int64_t end) {
     if (start < 0 || start >= self->length) {
         return NULL;
     }

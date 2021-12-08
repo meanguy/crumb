@@ -46,16 +46,12 @@ if __name__ == "__main__":
         print("No tests found.")
         sys.exit(0)
 
-    num_results = {
-        TestCaseResult.pass_: sum(1 for line in lines if line.result == TestCaseResult.pass_),
-        TestCaseResult.fail: sum(1 for line in lines if line.result == TestCaseResult.fail),
-        TestCaseResult.skip: sum(1 for line in lines if line.result == TestCaseResult.skip),
-    }
     test_results = {
         TestCaseResult.pass_: [line for line in lines if line.result == TestCaseResult.pass_],
         TestCaseResult.fail: [line for line in lines if line.result == TestCaseResult.fail],
         TestCaseResult.skip: [line for line in lines if line.result == TestCaseResult.skip],
     }
+    num_results = {state: len(lines) for state, lines in test_results.items()}
     
     print(f"\t{num_results[TestCaseResult.pass_]}/{len(lines)} passing tests")
     for test_result in test_results[TestCaseResult.pass_]:
